@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Internship Finder</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #288bed, #8e44ad);
+        }
+        header {
+            text-align: center;
+            padding: 40px;
+        }
+        header h1 {
+            font-size: 36px;
+            color: #2c3e50;
+        }
+        header p {
+            color: #555;
+            margin-top: 8px;
+            font-size: 18px;
+        }
+        #skillsInput {
+            padding: 10px;
+            width: 300px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .btn-primary {
+            background: #3f51b5;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #303f9f;
+        }
+        .btn-secondary {
+            background: linear-gradient(#288bed, #8e44ad);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .btn-secondary:hover {
+            background: #65d3db;
+        }
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .filter-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 140px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .filter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        .filter-card img {
+            width: 40px;
+            margin-bottom: 10px;
+        }
+        .recommendations {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        .card h3 {
+            margin: 0;
+            color: #3f51b5;
+        }
+        .card p {
+            color: #555;
+            margin-top: 6px;
+        }
+        .card button {
+            margin-top: 10px;
+            width: 100%;
+            font-size: 15px;
+            background: linear-gradient(90deg, #288bed, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .card button:hover {
+            background: #65d3db;
+        }
+
+        .why-us {
+            text-align: center;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .why-us h2 {
+            margin-bottom: 20px;
+        }
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .feature {
+            width: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Chatbot Modal Styles */
+        #chatbot-modal {
+            display: none;
+            position: fixed;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 80%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+            z-index: 1000;
+        }
+        #chatbot-header {
+            background: #3f51b5;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #chatbot-close {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        #chatbot-body {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        #chatbot-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+        #chatbot-input input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            font-size: 16px;
+        }
+        #chatbot-input button {
+            padding: 12px 20px;
+            border: none;
+            background: #3f51b5;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #chatbot-open {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+        }
+        .icon-btn {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Chat message styles */
+        .user-msg, .bot-msg {
+            padding: 10px 14px;
+            margin: 8px;
+            border-radius: 12px;
+            max-width: 75%;
+            word-wrap: break-word;
+        }
+        .user-msg {
+            background: #288bed;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .bot-msg {
+            background: #f1f0f0;
+            color: #222;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Typing animation */
+        .typing {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            background: #f1f0f0;
+            border-radius: 12px;
+            align-self: flex-start;
+            margin: 8px;
+        }
+        .typing span {
+            height: 6px;
+            width: 6px;
+            margin: 0 2px;
+            background-color: #555;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 1.4s infinite both;
+        }
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        /* 🔹 Responsive Styles */
+        @media (max-width: 768px) {
+            header h1 {font-size: 28px;}
+            header p {font-size: 16px;}
+            #skillsInput {width: 80%; margin: 10px auto; display:block;}
+            .btn {width: 80%; max-width: 250px; display:block; margin:10px auto;}
+            .features {flex-direction: column; align-items: center;}
+            .feature {width: 90%;}
+            #chatbot-modal {width: 90%; height: 75%;}
+        }
+        @media (max-width: 480px) {
+            header {padding: 20px;}
+            header h1 {font-size: 22px;}
+            header p {font-size: 14px;}
+            .filter-card {width: 120px; padding:15px;}
+            .card {padding:15px;}
+            #chatbot-input input {font-size:14px;}
+            #chatbot-input button {font-size:14px; padding:10px;}
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Find Your Perfect Internship with AI</h1>
+    <p>Personalized internship recommendations based on your skills & interests</p>
+    <input type="text" id="skillsInput" placeholder="Enter your skills/interests">
+    <button class="btn btn-primary" onclick="getRecommendations()">Get Recommendations</button>
+    <button class="btn btn-secondary" id="chatbot-open">
+        <img src="https://freesvg.org/img/1538298822.png" alt="AI Smart Search Icon" class="icon-btn">
+    </button>
+</header>
+
+<section class="filters">
+    <div class="filter-card" onclick="filterPrompt('skills')">
+        <img src="https://t4.ftcdn.net/jpg/14/33/97/73/360_F_1433977372_8s8TzMN0diQKOw9S4Z9UkJUCgASkrsyX.jpg" alt="Skills Icon"/>
+        <p>Skills</p>
+    </div>
+    <div class="filter-card" onclick="filterPrompt('interests')">
+        <img src="https://img.freepik.com/premium-vector/manual-testing-vector-illustration-style_717774-98549.jpg" alt="Interests Icon"/>
+        <p>Interests</p>
+    </div>
+</section>
+
+<section class="recommendations" id="recommendations"></section>
+
+<section class="why-us">
+    <h2>Why Choose Us?</h2>
+    <div class="features">
+        <div class="feature"><h3>🤖 AI Smart Matching</h3><p>Get best-fit internships instantly</p></div>
+        <div class="feature"><h3>⚡ Easy to Use</h3><p>Simple, clean dashboard</p></div>
+        <div class="feature"><h3>📈 Career Growth</h3><p>Internships that boost your future</p></div>
+        <div class="feature"><h3>🧭 Personalized Roadmap</h3><p>Get skill guidance</p></div>
+    </div>
+</section>
+
+<!-- Chatbot Modal -->
+<div id="chatbot-modal">
+    <div id="chatbot-header">AI Assistant <span id="chatbot-close">&times;</span></div>
+    <div id="chatbot-body"></div>
+    <div id="chatbot-input">
+        <input type="text" id="chat-msg" placeholder="Type your question...">
+        <button onclick="sendChat()">Send</button>
+    </div>
+</div>
+
+<script>
+    const chatbotModal = document.getElementById("chatbot-modal");
+    const chatbotOpen = document.getElementById("chatbot-open");
+    const chatbotClose = document.getElementById("chatbot-close");
+    const chatBody = document.getElementById("chatbot-body");
+
+    chatbotOpen.onclick = () => { chatbotModal.style.display = "flex"; }
+    chatbotClose.onclick = () => { chatbotModal.style.display = "none"; }
+
+    function sendChat() {
+        let msgInput = document.getElementById("chat-msg");
+        let msg = msgInput.value;
+        if (!msg) return;
+
+        // Add user message
+        let userDiv = document.createElement("div");
+        userDiv.className = "user-msg";
+        userDiv.textContent = msg;
+        chatBody.appendChild(userDiv);
+
+        // Add typing animation
+        let typingDiv = document.createElement("div");
+        typingDiv.className = "typing";
+        typingDiv.innerHTML = '<span></span><span></span><span></span>';
+        chatBody.appendChild(typingDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: msg })
+        })
+        .then(res => res.json())
+        .then(data => {
+            chatBody.removeChild(typingDiv);
+            let botDiv = document.createElement("div");
+            botDiv.className = "bot-msg";
+            botDiv.textContent = data.reply;
+            chatBody.appendChild(botDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        });
+
+        msgInput.value = "";
+    }
+
+    function filterPrompt(type) {
+        let val = prompt("Enter your " + type + ":");
+        if (val) {
+            document.getElementById("skillsInput").value = val;
+            getRecommendations();
+        }
+    }
+
+    function getRecommendations() {
+        let skills = document.getElementById("skillsInput").value;
+        if (!skills) return;
+
+        fetch("/recommend", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skills: skills })
+        })
+        .then(res => res.json())
+        .then(data => showRecommendations(data));
+    }
+
+    function showRecommendations(data) {
+        const container = document.getElementById("recommendations");
+        container.innerHTML = "";
+        data.forEach(i => {
+            let div = document.createElement("div");
+            div.className = "card";
+            div.innerHTML = `
+                <h3>${i.role}</h3>
+                <p>${i.company} - ${i.location}</p>
+                <p>Match: ${i.match}%</p>
+                <button onclick="window.open('${i.link}', '_blank')">View Internship</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+</script>
+
+</body>
+</html>
